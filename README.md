@@ -1,4 +1,5 @@
-> moti 전용 stomp 테스트 페이지입니다.
+> moti 전용 stomp 기반 websocket 테스트 페이지입니다.
+
 ## 소개
 - moti의 WebSocket 서버와 STOMP 실시간 통신(JWT 인증 포함) 테스트를 위한 React 단일 페이지 앱입니다.
 - 브라우저에서 WebSocket 연결/구독/전송/수신을 편하게 실험할 수 있습니다.
