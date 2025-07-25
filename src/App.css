@@ -91,24 +91,7 @@ button:disabled {
   color: #7f8c8d;
   cursor: not-allowed;
 }
-.subscriptions {
-  margin-top: 15px;
-  padding-top: 11px;
-  border-top: 1px solid #ddd;
-}
-.subscription-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
-}
-.unsubscribe-btn {
-  padding: 4px 9px;
-  font-size: 12px;
-  background: #e74c3c;
-}
-.unsubscribe-btn:hover { background: #c0392b; }
+
 .template-buttons {
   display: flex;
   gap: 6px;
@@ -187,8 +170,219 @@ button:disabled {
   word-break: break-all;
 }
 
+/* 새로운 구독 추가 기능 스타일 */
+.subscription-add-area {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.destination-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.destination-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.add-destination-btn {
+  padding: 8px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.add-destination-btn:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.add-destination-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* 구독 목록 공통 스타일 */
+.pending-subscriptions,
+.active-subscriptions {
+  margin-top: 20px;
+}
+
+.pending-subscriptions h3,
+.active-subscriptions h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #495057;
+}
+
+.destinations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.destination-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.destination-item.pending {
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
+}
+
+.destination-item.active {
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+}
+
+.destination-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.destination-path {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.status-badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.status-badge.pending {
+  background-color: #ffc107;
+  color: #856404;
+}
+
+.status-badge.active {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.destination-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.subscribe-btn {
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.subscribe-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.subscribe-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.unsubscribe-btn {
+  padding: 6px 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.unsubscribe-btn:hover {
+  background-color: #c82333;
+}
+
+.remove-btn {
+  padding: 6px 12px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.remove-btn:hover {
+  background-color: #5a6268;
+}
+
+/* 반응형 스타일 */
 @media (max-width: 900px) {
   .top-controls { flex-direction: column; }
   .narrow-section { max-width: unset; margin-bottom: 8px; }
   .messages-section { margin-top: 10px; }
+}
+
+@media (max-width: 768px) {
+  .destination-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .destination-actions {
+    justify-content: flex-end;
+  }
+
+  .destination-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Destination 템플릿 버튼 스타일 */
+.destination-template-buttons {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 7px;
+  flex-wrap: wrap;
+}
+
+.destination-template-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  background: #6f42c1;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.destination-template-btn:hover:not(:disabled) {
+  background: #5a32a3;
+}
+
+.destination-template-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
 }

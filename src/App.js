@@ -7,6 +7,7 @@ function App() {
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
   const [subscriptions, setSubscriptions] = useState(new Map());
+  const [subscribeDestinations, setSubscribeDestinations] = useState([]);
 
   // Form states
   const [connectForm, setConnectForm] = useState({
@@ -87,30 +88,56 @@ function App() {
     }
   };
 
-  const handleSubscribe = () => {
-    if (!client || !connected) {
-      addMessage('error', '❌ 먼저 연결을 수행해주세요.');
-      return;
-    }
+  const handleAddDestination = () => {
     const destination = subscribeForm.destination.trim();
+
     if (!destination) {
       addMessage('error', '❌ 구독할 경로를 입력해주세요.');
       return;
     }
+
+    if (subscribeDestinations.includes(destination)) {
+      addMessage('warning', `⚠️ 이미 추가된 경로입니다: ${destination}`);
+      return;
+    }
+
     if (subscriptions.has(destination)) {
       addMessage('warning', `⚠️ 이미 구독 중인 경로입니다: ${destination}`);
       return;
     }
+
+    setSubscribeDestinations(prev => [...prev, destination]);
+    setSubscribeForm({ ...subscribeForm, destination: '' });
+  };
+
+  const handleRemoveDestination = (destination) => {
+    setSubscribeDestinations(prev => prev.filter(dest => dest !== destination));
+  };
+
+  const handleSubscribeDestination = (destination) => {
+    if (!client || !connected) {
+      addMessage('error', '❌ 먼저 연결을 수행해주세요.');
+      return;
+    }
+
+    if (subscriptions.has(destination)) {
+      addMessage('warning', `⚠️ 이미 구독 중인 경로입니다: ${destination}`);
+      return;
+    }
+
     try {
       const subscription = client.subscribe(destination, (message) => {
         addMessage('message', `📨 [${destination}] ${message.body}`);
       });
+
       setSubscriptions(prev => new Map(prev).set(destination, subscription));
+      setSubscribeDestinations(prev => prev.filter(dest => dest !== destination));
       addMessage('info', `📡 구독 시작: ${destination}`);
     } catch (error) {
       addMessage('error', `❌ 구독 오류: ${error.message}`);
     }
   };
+
 
   const handleUnsubscribe = (destination) => {
     const subscription = subscriptions.get(destination);
@@ -171,6 +198,13 @@ function App() {
     });
   };
 
+  const handleDestinationTemplate = (template) => {
+    setSubscribeForm({
+      ...subscribeForm,
+      destination: template
+    });
+  };
+
   return (
       <div className="App">
         <header className="App-header">
@@ -216,37 +250,120 @@ function App() {
             {/* 구독 섹션 */}
             <section className="section narrow-section">
               <h2>📡 구독 (SUBSCRIBE)</h2>
+
+              {/* Destination 템플릿 버튼들 */}
               <div className="form-group">
-                <label>Destination:</label>
-                <input
-                    type="text"
-                    value={subscribeForm.destination}
-                    onChange={(e) => setSubscribeForm({ ...subscribeForm, destination: e.target.value })}
-                    placeholder="/topic/show-schedule/123/seats"
-                    disabled={!connected}
-                />
+                <label>Destination 템플릿:</label>
+                <div className="destination-template-buttons">
+                  <button
+                      type="button"
+                      onClick={() => handleDestinationTemplate('/topic/show-schedule/123/seats')}
+                      disabled={!connected}
+                      className="destination-template-btn"
+                  >
+                    좌석 상태
+                  </button>
+                  <button
+                      type="button"
+                      onClick={() => handleDestinationTemplate('/user/queue/show-schedule/123/session-init')}
+                      disabled={!connected}
+                      className="destination-template-btn"
+                  >
+                    세션 초기화
+                  </button>
+                  <button
+                      type="button"
+                      onClick={() => handleDestinationTemplate('/user/queue/errors')}
+                      disabled={!connected}
+                      className="destination-template-btn"
+                  >
+                    에러 알림
+                  </button>
+                </div>
               </div>
-              <button onClick={handleSubscribe} disabled={!connected}>
-                구독 시작
-              </button>
+
+              {/* 구독 추가 영역 */}
+              <div className="subscription-add-area">
+                <div className="form-group">
+                  <label>새 Destination 추가:</label>
+                  <div className="destination-input-group">
+                    <input
+                        type="text"
+                        value={subscribeForm.destination}
+                        onChange={(e) => setSubscribeForm({ ...subscribeForm, destination: e.target.value })}
+                        placeholder="/topic/show-schedule/123/seats"
+                        disabled={!connected}
+                        className="destination-input"
+                    />
+                    <button
+                        onClick={handleAddDestination}
+                        disabled={!connected || !subscribeForm.destination.trim()}
+                        className="add-destination-btn"
+                    >
+                      + 추가
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 구독 대기 목록 */}
+              {subscribeDestinations.length > 0 && (
+                  <div className="pending-subscriptions">
+                    <h3>구독 대기 목록:</h3>
+                    <div className="destinations-list">
+                      {subscribeDestinations.map((dest, index) => (
+                          <div key={index} className="destination-item pending">
+                            <div className="destination-info">
+                              <span className="destination-path">{dest}</span>
+                              <span className="status-badge pending">대기중</span>
+                            </div>
+                            <div className="destination-actions">
+                              <button
+                                  onClick={() => handleSubscribeDestination(dest)}
+                                  disabled={!connected || subscriptions.has(dest)}
+                                  className="subscribe-btn"
+                              >
+                                구독 시작
+                              </button>
+                              <button
+                                  onClick={() => handleRemoveDestination(dest)}
+                                  className="remove-btn"
+                              >
+                                제거
+                              </button>
+                            </div>
+                          </div>
+                      ))}
+                    </div>
+                  </div>
+              )}
+
               {/* 활성 구독 목록 */}
               {subscriptions.size > 0 && (
-                  <div className="subscriptions">
+                  <div className="active-subscriptions">
                     <h3>활성 구독 목록:</h3>
-                    {Array.from(subscriptions.keys()).map(destination => (
-                        <div key={destination} className="subscription-item">
-                          <span>{destination}</span>
-                          <button
-                              onClick={() => handleUnsubscribe(destination)}
-                              className="unsubscribe-btn"
-                          >
-                            구독 해제
-                          </button>
-                        </div>
-                    ))}
+                    <div className="destinations-list">
+                      {Array.from(subscriptions.keys()).map(destination => (
+                          <div key={destination} className="destination-item active">
+                            <div className="destination-info">
+                              <span className="destination-path">{destination}</span>
+                              <span className="status-badge active">구독중</span>
+                            </div>
+                            <div className="destination-actions">
+                              <button
+                                  onClick={() => handleUnsubscribe(destination)}
+                                  className="unsubscribe-btn"
+                              >
+                                구독 해제
+                              </button>
+                            </div>
+                          </div>
+                      ))}
+                    </div>
                   </div>
               )}
             </section>
+
 
             {/* 메시지 전송 섹션 */}
             <section className="section narrow-section">
