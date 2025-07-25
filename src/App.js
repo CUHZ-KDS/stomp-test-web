@@ -265,7 +265,7 @@ function App() {
                   </button>
                   <button
                       type="button"
-                      onClick={() => handleDestinationTemplate('/user/queue/show-schedule/123/session-init')}
+                      onClick={() => handleDestinationTemplate('/app/show-schedule/123/session-init')}
                       disabled={!connected}
                       className="destination-template-btn"
                   >
@@ -351,6 +351,7 @@ function App() {
                             </div>
                             <div className="destination-actions">
                               <button
+                                  type="button"
                                   onClick={() => handleUnsubscribe(destination)}
                                   className="unsubscribe-btn"
                               >
