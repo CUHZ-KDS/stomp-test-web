@@ -192,9 +192,14 @@ function App() {
   };
 
   const handleTemplateSelect = (template) => {
+    let destination = '';
+    if (template === 'seat-select') destination = '/app/seat/select';
+    if (template === 'seat-deselect') destination = '/app/seat/deselect';
+    if (template === 'seat-reserve') destination = '/app/seat/reserve';
     setSendForm({
       ...sendForm,
-      message: messageTemplates[template]
+      message: messageTemplates[template],
+      destination
     });
   };
 
@@ -390,10 +395,7 @@ function App() {
                           disabled={!connected} className="template-btn">
                     좌석 해제
                   </button>
-                  <button type="button" onClick={() => handleTemplateSelect('seat-reserve')}
-                          disabled={!connected} className="template-btn">
-                    좌석 예약
-                  </button>
+
                 </div>
               </div>
               <div className="form-group">
